@@ -60,6 +60,8 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
   const user = auth.currentUser;
   const [isEditing, setIsEdting] = useState(false);
   const [editedTweet, setEditedTweet] = useState(tweet);
+  const [newPhoto, setNewPhoto] = useState<File | null>(null);
+  const [newPhotoURL, setNewPhotoURL] = useState(photo);
   const onDelete = async () => {
     const ok = confirm("Are you sure you want to delete this tweet?");
     if (!ok || user?.uid !== userId) return;
@@ -72,6 +74,13 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
     } catch (e) {
       console.log(e);
     } finally {
+    }
+  };
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setNewPhoto(file);
+      setNewPhotoURL(URL.createObjectURL(file));
     }
   };
   const onEdit = async () => {
@@ -101,11 +110,29 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
           </>
         ) : null}
       </Column>
-      {photo ? (
+      {/* {photo ? (
         <Column>
           <Photo src={photo} />
         </Column>
-      ) : null}
+      ) : null} */}
+      {isEditing ? (
+        <div>
+          {newPhotoURL && (
+            <img
+              src={newPhotoURL}
+              alt="New Tweet"
+              style={{ width: "100px", height: "100px" }}
+            />
+          )}
+          <input type="file" accept="image/*" onChange={onFileChange} />
+        </div>
+      ) : (
+        photo && (
+          <Column>
+            <Photo src={photo} alt="Tweet" />
+          </Column>
+        )
+      )}
       {isEditing && (
         <div>
           <textarea
