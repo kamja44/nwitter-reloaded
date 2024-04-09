@@ -50,11 +50,23 @@ const Tweets = styled.div`
   gap: 10px;
   width: 100%;
 `;
+const EditNameContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+`;
+const NameChangeInput = styled.input`
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 16px;
+`;
 
 export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [tweets, setTweets] = useState<ITweet[]>([]);
+  const [name, setName] = useState(user?.displayName || "");
+  const [editingName, setEditingName] = useState(false);
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (!user) return;
@@ -93,6 +105,16 @@ export default function Profile() {
   useEffect(() => {
     fetchTweets();
   }, []);
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setName(event.target.value);
+  const toggleEditName = () => setEditingName(!editingName);
+  const updateName = async () => {
+    if (!user) return;
+    await updateProfile(user, {
+      displayName: name,
+    });
+  };
+
   return (
     <Wrapper>
       <AvatarUpload htmlFor="avatar">
@@ -116,6 +138,20 @@ export default function Profile() {
         accept="image/*"
       />
       <Name>{user?.displayName ?? "Anonymous"}</Name>
+      {editingName ? (
+        <EditNameContainer>
+          <NameChangeInput
+            type="text"
+            placeholder="Enter Name"
+            value={name}
+            onChange={handleNameChange}
+          />
+          <button onClick={updateName}>Update</button>
+          <button onClick={toggleEditName}>Cancle</button>
+        </EditNameContainer>
+      ) : (
+        <button onClick={toggleEditName}>Change Name</button>
+      )}
       <Tweets>
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} {...tweet} />
