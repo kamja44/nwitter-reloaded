@@ -60,7 +60,7 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
   const user = auth.currentUser;
   const [isEditing, setIsEdting] = useState(false);
   const [editedTweet, setEditedTweet] = useState(tweet);
-  const [newPhoto, setNewPhoto] = useState<File | null>(null);
+  const [_, setNewPhoto] = useState<File | null>(null);
   const [newPhotoURL, setNewPhotoURL] = useState(photo);
   const onDelete = async () => {
     const ok = confirm("Are you sure you want to delete this tweet?");

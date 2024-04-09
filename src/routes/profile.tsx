@@ -119,7 +119,7 @@ export default function Profile() {
     <Wrapper>
       <AvatarUpload htmlFor="avatar">
         {Boolean(avatar) ? (
-          <AvatarImg src={avatar} />
+          <AvatarImg src={avatar ? avatar : undefined} />
         ) : (
           <svg
             fill="currentColor"
